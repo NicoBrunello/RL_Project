@@ -12,7 +12,7 @@ We are using Ubuntu 64-bit 16.04.4 :
 For further requirements refer to gym_torcs guide
 
 ### Installation
-Follow the instruction explained on gym_torcs, but pay attention at two point:
+Follow the instruction explained on gym_torcs, but pay attention at two points:
 1. Clone the gym_torcs directory into  `usr/src `, otherwise linking problems could come up
 2. Use these command to compile vtorcs: 
 ``` 
