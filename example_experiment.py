@@ -3,15 +3,16 @@ from sample_agent import Agent
 import numpy as np
 
 vision = True
-episode_count = 10
-max_steps = 50
+episode_count = 500
+max_steps = 500
 reward = 0
 done = False
-step = 0
+step = 2
 
 # Generate a Torcs environment
+print ("Creating Torcs environment")
 env = TorcsEnv(vision=vision, throttle=False)
-
+print("Torcs env created--------------------")
 agent = Agent(1)  # steering only
 
 

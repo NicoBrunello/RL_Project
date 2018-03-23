@@ -23,7 +23,7 @@ class Agent(object):
             """ The code below is for checking the vision input. This is very heavy for real-time Control
                 So you may need to remove.
             """
-            print(vision.shape)
+           ## print(vision.shape)
             """
             img = np.ndarray((64,64,3))
             for i in range(3):
