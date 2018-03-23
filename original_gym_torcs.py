@@ -1,4 +1,4 @@
-import gym
+sudo import gym
 from gym import spaces
 import numpy as np
 # from os import path
@@ -133,7 +133,7 @@ class TorcsEnv:
         # direction-dependent positive reward
         track = np.array(obs['track'])
         sp = np.array(obs['speedX'])
-        progress = sp*np.cos(obs['angle'])
+        progress = sp*np.cos(obs['angle'])-1/(np.exp(np.cos(obs['angle'])))
         reward = progress
 
         # collision detection
@@ -278,4 +278,3 @@ class TorcsEnv:
                                track=np.array(raw_obs['track'], dtype=np.float32)/200.,
                                wheelSpinVel=np.array(raw_obs['wheelSpinVel'], dtype=np.float32),
                                img=image_rgb)
-
