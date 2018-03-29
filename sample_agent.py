@@ -2,10 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Agent(object):
+    
+
     def __init__(self, dim_action):
         self.dim_action = dim_action
 
-    def act(self, ob, reward, done, vision_on):
+    def act(self, ob, reward, done, vision_on, theta):
+
+        cov= np.identity(8) *0.1
         #print("ACT!")
 
         # Get an Observation from the environment.
@@ -19,18 +23,23 @@ class Agent(object):
             focus, speedX, speedY, speedZ, opponents, rpm, track, wheelSpinVel = ob
         else:
             focus, speedX, speedY, speedZ, opponents, rpm, track, wheelSpinVel, vision = ob
+        
+        #Preparing the state 
 
-            """ The code below is for checking the vision input. This is very heavy for real-time Control
-                So you may need to remove.
-            """
-           ## print(vision.shape)
-            """
-            img = np.ndarray((64,64,3))
-            for i in range(3):
-                img[:, :, i] = 255 - vision[:, i].reshape((64, 64))
 
-            plt.imshow(img, origin='lower')
-            plt.draw()
-            plt.pause(0.001)
-            """
-        return np.tanh(np.random.randn(self.dim_action)) # random action
+        #Get the average action theta * ob
+        # Values of ob must be prepared
+        av_theta =[np.dot(theta[0,1],focus[0]),
+                    np.dot(theta[0,2],speedX),
+                    np.dot(theta[0,2],speedY),
+                    np.dot(theta[0,3],speedZ),
+                    np.dot(theta[0,4],opponents[0]),
+                    np.dot(theta[0,5],rpm),
+                    np.dot(theta[0,6],track[0]),
+                    np.dot(theta[0,7],wheelSpinVel[0]) ] 
+        #Sample the action from a gaussian distribution with mean value av_theta
+        action =np.random.multivariate_normal(av_theta, cov)
+        #return the action
+        print(np.tanh(action))
+        
+        return np.tanh(action)
