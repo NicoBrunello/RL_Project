@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib as pl
 
 vision = False
-episode_count = 3
+episode_count = 50
 max_steps = 100
 reward = 0
 done = False
@@ -12,12 +12,12 @@ step = 2
 # Theta represent the policy
 theta = np.ndarray(shape=(8,3), dtype=(float))
 #Learning rate
-alpha=0.0001
+alpha=0.00001
 
 def compute_gradient(a_s_vector, av_theta, J ):
     delta_theta =[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
-    for i in range(len(a_s_vector)):
-        action=a_s_vector[i][1] - av_theta
+    for i in range(len(a_s_vector)-1):
+        action=a_s_vector[i+1][1] - av_theta
         state = a_s_vector[i][0]
         delta_theta = delta_theta + (np.multiply(action[0] - av_theta[0],  state)  / (0.1*0.1))
     baseline= ((delta_theta**2) * J)/(delta_theta**2)
@@ -69,8 +69,10 @@ for i in range(episode_count):
 
     performance = np.append(performance, [J])
     gradient = compute_gradient(states, av_theta, J)
+
+    print("Gradient----_>" + str(gradient))
+    #Update policy
     theta = theta + alpha * gradient
-    print("theta ------------->"+str(theta))
     #print(str(J))
     print("TOTAL REWARD @ " + str(i) +" -th Episode  :  " + str(total_reward))
     print("Total Step: " + str(step))

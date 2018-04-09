@@ -36,22 +36,22 @@ class Agent(object):
         
         for i in range(self.dim_action):
             theta[i] =  (theta[i]-min(theta[i]))/(max(theta[i])-min(theta[i])) -0.5
+        
         #Get the average action theta * ob
         #todo: transform vectors in values,  now just to try out the code I take the first value vector feature
         av_theta =  [np.dot(theta[0],ob_theta1),
                     np.dot(theta[1],ob_theta2),
                     np.dot(theta[2],ob_theta3)]
-        print("av_theta--> "+ str(av_theta))
-        #av_theta =np.dot(theta[0,1],focus[0]) + np.dot(theta[0,2],speedX) + np.dot(theta[0,2],speedY) + np.dot(theta[0,3],speedZ) + np.dot(theta[0,4],opponents[0]) + np.dot(theta[0,5],n_rpm) + np.dot(theta[0,6],track[0]) + np.dot(theta[0,7],n_wheelSpinVel[0]) 
+
         #Normalize av_theta 
-        av_theta =  (av_theta-min(av_theta))/(max(av_theta)-min(av_theta)) -0.5
-        
+        #for i in range(self.dim_action):
+        #    av_theta[i] =  (av_theta[i]-np.absolute(min(av_theta)))/(max(av_theta)-np.absolute(min(av_theta)))  -0.5
         #Sample the action from a gaussian distribution with mean equals to av_theta
         action =np.random.multivariate_normal(av_theta, cov)
-        action =  (action-min(action))/(max(action)-min(action)) -0.5
+        n_action =  (action-min(action))/(max(action)-min(action)) -0.5
         #return the action
-        print(np.tanh(action))     
-        return (np.tanh(action), action, av_theta, [ob_theta1, ob_theta2, ob_theta3])
+        print(np.tanh(n_action))     
+        return (np.tanh(n_action), action, av_theta, [ob_theta1, ob_theta2, ob_theta3])
 
 
 
