@@ -25,33 +25,50 @@ class Agent(object):
             focus, speedX, speedY, speedZ, opponents, rpm, track, wheelSpinVel, vision = ob
         
         #Preparing the state
-        # Scale rpm between [0-1] 
+        # Normalize rpm between [0-1] 
         n_rpm = np.tanh(rpm)
-        #Scale the wheelSpinVel vector
+        
+        #Normalize the wheelSpinVel vector
         n_wheelSpinVel = np.tanh(wheelSpinVel)
+        
+        #Normalize speed
+        n_speedX= ((speedX - (-90)) / (180) ) -0.5
+        n_speedY= ((speedY - (-90)) / (180) ) -0.5
+        n_speedZ= ((speedZ - (-90)) / (180) ) -0.5
 
-        ob_theta1 = [focus[0], speedX, speedY, speedZ, opponents[0], rpm, track[0], wheelSpinVel[0]]
-        ob_theta2 = [focus[0], speedX, speedY, speedZ, opponents[0], rpm, track[0], wheelSpinVel[0]]
-        ob_theta3 = [focus[0], speedX, speedY, speedZ, opponents[0], rpm, track[0], wheelSpinVel[0]]
-        
-        for i in range(self.dim_action):
-            theta[i] =  (theta[i]-min(theta[i]))/(max(theta[i])-min(theta[i])) -0.5
-        
+        #Normalize track
+        n_track = ((track)/ 200)
+        #Normalize opponents
+        n_opponents = ((opponents)/ 200)
+
+        ob_theta = np.asarray(focus)
+        ob_theta = np.append(ob_theta, [n_speedX, n_speedY, n_speedZ])
+        ob_theta = np.append(ob_theta, [opponents])
+        ob_theta = np.append(ob_theta, n_rpm)
+        ob_theta  = np.append(ob_theta, [n_track])
+        ob_theta = np.append(ob_theta, [n_wheelSpinVel])
+
+        print("Ob_theta --------------")
+        print(str(ob_theta))
+        print("-------------------------")
+
         #Get the average action theta * ob
         #todo: transform vectors in values,  now just to try out the code I take the first value vector feature
-        av_theta =  [np.dot(theta[0],ob_theta1),
-                    np.dot(theta[1],ob_theta2),
-                    np.dot(theta[2],ob_theta3)]
+        av_theta =  [np.dot(theta[0],ob_theta),
+                    np.dot(theta[1],ob_theta),
+                    np.dot(theta[2],ob_theta)]
+        print("Av_theta --------------")
+        print(str(av_theta))
+        print("-------------------------")
 
-        #Normalize av_theta 
-        #for i in range(self.dim_action):
-        #    av_theta[i] =  (av_theta[i]-np.absolute(min(av_theta)))/(max(av_theta)-np.absolute(min(av_theta)))  -0.5
+
         #Sample the action from a gaussian distribution with mean equals to av_theta
         action =np.random.multivariate_normal(av_theta, cov)
-        n_action =  (action-min(action))/(max(action)-min(action)) -0.5
+        print(action)     
+
+        #action = np.clip(action,-1,1)
         #return the action
-        print(np.tanh(n_action))     
-        return (np.tanh(n_action), action, av_theta, [ob_theta1, ob_theta2, ob_theta3])
+        return (action, av_theta, ob_theta)
 
 
 

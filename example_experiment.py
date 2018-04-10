@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib as pl
 
 vision = False
-episode_count = 50
-max_steps = 100
+episode_count = 100
+max_steps = 10000
 reward = 0
 done = False
 step = 2
@@ -15,13 +15,13 @@ theta = np.ndarray(shape=(8,3), dtype=(float))
 alpha=0.00001
 
 def compute_gradient(a_s_vector, av_theta, J ):
-    delta_theta =[[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0]]
+    delta_theta =np.zeros((3,68))
     for i in range(len(a_s_vector)-1):
-        action=a_s_vector[i+1][1] - av_theta
-        state = a_s_vector[i][0]
-        delta_theta = delta_theta + (np.multiply(action[0] - av_theta[0],  state)  / (0.1*0.1))
-    baseline= ((delta_theta**2) * J)/(delta_theta**2)
-    gradient = delta_theta * (J-baseline**8)
+        action=a_s_vector[i+1][1] - a_s_vector[i+1][3]
+        state = a_s_vector[i+1][0]
+        delta_theta = delta_theta + (np.outer(action,  state)  / (0.1*0.1))
+    baseline= ((delta_theta**2) * (J**2))/(delta_theta**2)
+    gradient = delta_theta * (J-baseline)
     return gradient
 
 
@@ -33,7 +33,7 @@ agent = Agent(3)  # now we use steering only, but we might use throttle and gear
 
 #Init theta vector
 
-theta=np.random.normal(1, 0.1,(3,8))
+theta=np.random.normal(0, 0.01,(3,68))
 performance = np.array([0])
 
 print("TORCS Experiment Start.")
@@ -47,12 +47,12 @@ for i in range(episode_count):
         ob = env.reset()
 
     total_reward = 0.
-    states = np.array([[0,0,0]])
+    states = np.array([[0,0,0,0]])
     J= 0;
 
     for j in range(max_steps):
 
-        action, raw_action, av_theta, ob_theta = agent.act(ob, reward, done, vision, theta)
+        action, av_theta, ob_theta = agent.act(ob, reward, done, vision, theta)
         ob, reward, done, _ = env.step(action)
 
         #print("\n-------------------------------------------------------")
@@ -60,7 +60,7 @@ for i in range(episode_count):
         #print("\n-------------------------------------------------------")
         total_reward += reward
         ## update the vector of trajectories
-        states = np.append(states, [[ob_theta, raw_action, reward]], axis=0 )
+        states = np.append(states, [[ob_theta, action, reward, av_theta]], axis=0 )
         ## update performance
         J= J + (0.99**j) * (reward) 
         step += 1
@@ -73,6 +73,9 @@ for i in range(episode_count):
     print("Gradient----_>" + str(gradient))
     #Update policy
     theta = theta + alpha * gradient
+    print("theta --------------")
+    print(str(theta))
+    print("-------------------------")
     #print(str(J))
     print("TOTAL REWARD @ " + str(i) +" -th Episode  :  " + str(total_reward))
     print("Total Step: " + str(step))
