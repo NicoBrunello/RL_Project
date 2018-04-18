@@ -9,7 +9,8 @@ class Agent(object):
 
     def act(self, ob, reward, done, vision_on, theta):
 
-        cov= np.identity(3) *0.1
+        cov= np.identity(3) *0.01
+        action= np.zeros(3)
         #print("ACT!")
 
         # Get an Observation from the environment.
@@ -36,35 +37,23 @@ class Agent(object):
         n_speedY= ((speedY - (-90)) / (180) ) -0.5
         n_speedZ= ((speedZ - (-90)) / (180) ) -0.5
 
-        #Normalize track
-        n_track = ((track)/ 200)
-        #Normalize opponents
-        n_opponents = ((opponents)/ 200)
-
         ob_theta = np.asarray(focus)
         ob_theta = np.append(ob_theta, [n_speedX, n_speedY, n_speedZ])
         ob_theta = np.append(ob_theta, [opponents])
         ob_theta = np.append(ob_theta, n_rpm)
-        ob_theta  = np.append(ob_theta, [n_track])
+        ob_theta  = np.append(ob_theta, [track])
         ob_theta = np.append(ob_theta, [n_wheelSpinVel])
 
-        print("Ob_theta --------------")
-        print(str(ob_theta))
-        print("-------------------------")
+       # print("Ob_theta --------------")
+       # print(str(ob_theta))
+       # print("-------------------------")
 
         #Get the average action theta * ob
         #todo: transform vectors in values,  now just to try out the code I take the first value vector feature
-        av_theta =  [np.dot(theta[0],ob_theta),
-                    np.dot(theta[1],ob_theta),
-                    np.dot(theta[2],ob_theta)]
-        print("Av_theta --------------")
-        print(str(av_theta))
-        print("-------------------------")
-
+        av_theta =  np.inner(theta, ob_theta)
 
         #Sample the action from a gaussian distribution with mean equals to av_theta
         action =np.random.multivariate_normal(av_theta, cov)
-        print(action)     
 
         #action = np.clip(action,-1,1)
         #return the action
