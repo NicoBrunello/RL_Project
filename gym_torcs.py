@@ -11,8 +11,8 @@ import time
 
 
 class TorcsEnv:
-    terminal_judge_start = 500  # Speed limit is applied after this step
-    termination_limit_progress = 300  # [km/h], episode terminates if car is running slower than this limit
+    terminal_judge_start = 5000  # Speed limit is applied after this step
+    termination_limit_progress = 0  # [km/h], episode terminates if car is running slower than this limit
     default_speed = 90
 
     initial_reset = True
@@ -147,10 +147,9 @@ class TorcsEnv:
              episode_terminate = True
              client.R.d['meta'] = True
 
-        if self.terminal_judge_start < self.time_step: # Episode terminates if the progress of agent is small
-            if progress < self.termination_limit_progress:
-                episode_terminate = True
-                client.R.d['meta'] = True
+        #if self.terminal_judge_start < self.time_step: # Episode terminates if the progress of agent is small
+        #    if progress < self.termination_limit_progress:
+        #        episode_terminate = True
 
         if np.cos(obs['angle']) < 0: # Episode is terminated if the agent runs backward
             episode_terminate = True

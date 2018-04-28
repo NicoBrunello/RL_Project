@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib as pl
 
 vision = False
-episode_count = 500
-max_steps = 10000
+episode_count = 2000
+max_steps = 1000
 reward = 0
 done = False
 step = 0
@@ -14,7 +14,7 @@ theta = np.ndarray(shape=(3,68), dtype=(float))
 #Learning rate
 alpha=0.00000001
 #Number of episode to compute the average gradient, this let the variance decreases
-avg_episode = 10
+avg_episode = 20
 
 def compute_gradient(traj, baseline ):
     gradient = np.zeros((3,68))
