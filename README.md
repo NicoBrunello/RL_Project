@@ -26,8 +26,8 @@ make datainstall
 as shown in (https://github.com/giuse/vtorcs/tree/nosegfault)
 
 ### Launching
-To run the agent use : ``` sudo python3 example_experiment.py ``` 
+To run the agent use : ``` sudo python3 REINFORCE.py ``` 
 
-The `example_experiment.py sample_agent.py ` are the class modified for this project
+The classes REINFORCE.py and GPOMDP.py are two agent that implement the respective RL algorithm, choose one of them. 
 
 To check the results look at the J plot at the end of the process
