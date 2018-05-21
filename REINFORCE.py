@@ -4,29 +4,30 @@ import numpy as np
 import matplotlib as pl
 
 vision = False
-episode_count = 2000
-max_steps = 1000
+episode_count = 5000
+max_steps = 5000
 reward = 0
 done = False
 step = 0
 # Theta represent the policy
-theta = np.ndarray(shape=(3,68), dtype=(float))
+theta = np.ndarray(shape=(3,32), dtype=(float))
 #Learning rate
-alpha=0.00000001
+alpha=0.000001
 #Number of episode to compute the average gradient, this let the variance decreases
-avg_episode = 20
-
+avg_episode = 2
+#Number of states
+n_states= 31
 def compute_gradient(traj, baseline ):
-    gradient = np.zeros((3,68))
+    gradient = np.zeros((3, n_states))
     for k in range(avg_episode):
         gradient = gradient + ( traj[k][0] *(traj[k][1]-(baseline)))
     gradient = gradient / avg_episode
     return gradient
 
-def compute_Baseline(a_s_vector, av_theta, J):
-    delta_theta =np.zeros((3,68))
+def compute_Baseline(a_s_vector, J):
+    delta_theta =np.zeros((3, n_states))
     for i in range(len(a_s_vector)-1):
-        action=a_s_vector[i+1][1] - a_s_vector[i+1][3]
+        action=a_s_vector[i+1][1] - a_s_vector[i+1][2]
         state = a_s_vector[i+1][0]
         delta_theta = delta_theta + (np.outer(action,  state) / (0.1*0.1))
     baseline_num= ((delta_theta**2) *J)
@@ -40,7 +41,7 @@ print("Torcs env created--------------------")
 agent = Agent(3)  # now we use steering only, but we might use throttle and gear
 
 #Init theta vector
-theta=np.random.normal(0, 0.01,(3,68))
+theta=np.random.normal(0, 0.01,(3,n_states))
 
 performance = np.array([0])
 
@@ -63,12 +64,12 @@ for i in range(episode_count):
 
 
     total_reward = 0.
-    states = np.array([[0,0,0,0]])
+    states = np.array([[0,0,0]])
     J= 0
     step =0
     delta_theta=0
 
-    for j in range(max_steps):
+    for step in range(max_steps):
 
         action, av_theta, ob_theta = agent.act(ob, reward, done, vision, theta)
         ob, reward, done, _ = env.step(action)
@@ -79,9 +80,9 @@ for i in range(episode_count):
         total_reward += reward
 
         ## update the vector of trajectories
-        states = np.append(states, [[ob_theta, action, reward, av_theta]], axis=0 )
+        states = np.append(states, [[ob_theta, action, av_theta]], axis=0 )
         ## update performance
-        J= J + (0.99**j) * (reward) 
+        J= J + (0.99**step) * (reward) 
         step += 1
         if done:
             break
@@ -90,8 +91,7 @@ for i in range(episode_count):
     
     
     #Compute Baseline for current episode, delta_theta is the component for compute gradient with the average baseline
-    #Component il delta_theta*J, do so just to avoid passing J function again
-    baseline_num, baseline_den, delta_theta = compute_Baseline(states, av_theta, J)
+    baseline_num, baseline_den, delta_theta = compute_Baseline(states, J)
     
     #Sum Baselines to get the average
     baseline_n= baseline_n + baseline_num

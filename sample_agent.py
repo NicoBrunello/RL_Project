@@ -39,17 +39,16 @@ class Agent(object):
 
         ob_theta = np.asarray(focus)
         ob_theta = np.append(ob_theta, [n_speedX, n_speedY, n_speedZ])
-        ob_theta = np.append(ob_theta, [opponents])
-        ob_theta = np.append(ob_theta, n_rpm)
+        #ob_theta = np.append(ob_theta, [opponents])
+        #ob_theta = np.append(ob_theta, n_rpm)
         ob_theta  = np.append(ob_theta, [track])
         ob_theta = np.append(ob_theta, [n_wheelSpinVel])
 
-       # print("Ob_theta --------------")
-       # print(str(ob_theta))
+        #print("Ob_theta --------------")
+        #print(str(ob_theta))
        # print("-------------------------")
 
         #Get the average action theta * ob
-        #todo: transform vectors in values,  now just to try out the code I take the first value vector feature
         av_theta =  np.inner(theta, ob_theta)
 
         #Sample the action from a gaussian distribution with mean equals to av_theta
